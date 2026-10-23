@@ -1,80 +1,38 @@
 local addonName, ns = ...
 
-local FRAME_NAME = addonName .. "Dialog"
+local UI = LibStub("LibNativeUI-1.0")
+
 local TITLE = "Player Armory Link"
-local COPIED_TEXT = "Armory link copied"
+local COPIED_TEXT = "Armory link copied to clipboard."
 local WIDTH = 448
-
--- Blizzard's own text roles: the name as a gold heading, the realm as white body text, the hint as grey help text.
-local NAME_FONT = GameFontNormalLarge
-local REALM_FONT = GameFontHighlight
-local HINT_FONT = GameFontDisableSmall
-
--- The dialog header hangs about 28px into the frame, so content starts a little below it.
-local CONTENT_TOP = 40
-local PADDING = 20
-local NAME_GAP = 2
-local LINK_GAP = 8
-local HINT_GAP = 4
-
--- InputBoxTemplate's art is 20px tall, and its left cap sits 5px outside the edit box, so the box shifts right to line the art up with the text column.
-local INPUT_HEIGHT = 20
-local INPUT_ART_OFFSET = 5
 
 -- Long enough for the client to finish the copy before the edit box goes away.
 local CLOSE_DELAY = 0.2
 
+-- macOS copies only with Cmd, so Ctrl there must not close the dialog or report a copy.
+local copyModifier = IsMacClient() and IsMetaKeyDown or IsControlKeyDown
+
 local dialog
 
--- Forever's GameMenuFrame chrome: the DiamondMetal border, the banner header and the standard close button.
-local function createDialogFrame()
-    local frame = CreateFrame("Frame", FRAME_NAME, UIParent)
-    frame.Border = CreateFrame("Frame", nil, frame, "DialogBorderTemplate")
-    frame.Header = CreateFrame("Frame", nil, frame, "DialogHeaderTemplate")
-    local close = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
-    close:SetPoint("TOPRIGHT", -2, -2)
-    return frame
-end
-
 local function copyHint()
-    local key = IsMacClient() and "CMD" or "CTRL"
-    return "Press " .. key .. "+C to copy and close."
-end
-
--- Line heights come from the font objects, so the layout follows the game's own font sizes.
-local function fontHeight(font)
-    local _, height = font:GetFont()
-    return height
-end
-
-local function createText(parent, font)
-    local text = parent:CreateFontString(nil, "ARTWORK")
-    text:SetFontObject(font)
-    text:SetHeight(fontHeight(font))
-    text:SetJustifyH("LEFT")
-    text:SetWordWrap(false)
-    return text
-end
-
--- Rows stack down the content column and each one spans to the right padding.
-local function stackRow(row, above, gap, indent)
-    row:SetPoint("TOPLEFT", above, "BOTTOMLEFT", indent or 0, -gap)
-    row:SetPoint("RIGHT", row:GetParent(), "RIGHT", -PADDING, 0)
+    local key = IsMacClient() and "Cmd" or "Ctrl"
+    return "Press " .. key .. "+C to copy."
 end
 
 local function isCopyChord(key)
-    return key == "C" and (IsControlKeyDown() or IsMetaKeyDown())
+    return key == "C" and copyModifier()
 end
 
 local function createLinkBox(frame)
-    local link = CreateFrame("EditBox", nil, frame, "InputBoxTemplate")
-    link:SetHeight(INPUT_HEIGHT)
-    link:SetAutoFocus(false)
+    local link = UI.CreateEditBox(frame, frame.contentWidth - UI.Native.inputArt)
 
     link:SetScript("OnEscapePressed", function()
         frame:Hide()
     end)
-    link:SetScript("OnEnterPressed", link.HighlightText)
+    link:SetScript("OnEnterPressed", EditBox_HighlightText)
+
+    -- A click places the cursor and drops the selection, so the whole link is selected again.
+    link:SetScript("OnMouseUp", EditBox_HighlightText)
 
     -- Reverts any edit so the link stays intact and fully selected.
     link:SetScript("OnTextChanged", function(self, userInput)
@@ -84,10 +42,13 @@ local function createLinkBox(frame)
         end
     end)
 
-    link:SetScript("OnKeyDown", function(_, key)
+    link:SetScript("OnKeyDown", function(self, key)
         if not isCopyChord(key) then
             return
         end
+
+        -- Selects the whole link before the client copies, so the copy is never empty.
+        self:HighlightText()
         C_Timer.After(CLOSE_DELAY, function()
             frame:Hide()
             UIErrorsFrame:AddMessage(COPIED_TEXT, GREEN_FONT_COLOR:GetRGB())
@@ -97,44 +58,20 @@ local function createLinkBox(frame)
     return link
 end
 
+-- The name as the 16 px title, the realm, the selected link and a grey hint, above the centre so the character stays visible.
 local function createDialog()
-    local frame = createDialogFrame()
-    frame:SetFrameStrata("DIALOG")
-    frame:SetToplevel(true)
-    frame:SetClampedToScreen(true)
-    frame:SetMovable(true)
-    frame:EnableMouse(true)
-    frame:RegisterForDrag("LeftButton")
-    frame:SetScript("OnDragStart", frame.StartMoving)
-    frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
-    frame:SetPoint("CENTER", 0, 140)
-    frame:Hide()
-
-    frame.Header:Setup(TITLE)
-
-    frame.name = createText(frame, NAME_FONT)
-    frame.name:SetPoint("TOPLEFT", PADDING, -CONTENT_TOP)
-    frame.name:SetPoint("RIGHT", -PADDING, 0)
-
-    frame.realm = createText(frame, REALM_FONT)
-    stackRow(frame.realm, frame.name, NAME_GAP)
-
+    local frame = UI.CreateDialog({
+        name = addonName .. "Dialog",
+        title = TITLE,
+        width = WIDTH,
+        position = { point = "CENTER", y = 140 },
+    })
+    frame.name = frame:AddText("title", "")
+    frame.realm = frame:AddText("body", "", UI.Space.tight)
     frame.link = createLinkBox(frame)
-    stackRow(frame.link, frame.realm, LINK_GAP, INPUT_ART_OFFSET)
-
-    local hint = createText(frame, HINT_FONT)
-    stackRow(hint, frame.link, HINT_GAP, -INPUT_ART_OFFSET)
-    hint:SetText(copyHint())
-
-    local height = CONTENT_TOP
-        + fontHeight(NAME_FONT) + NAME_GAP
-        + fontHeight(REALM_FONT) + LINK_GAP
-        + INPUT_HEIGHT + HINT_GAP
-        + fontHeight(HINT_FONT) + PADDING
-    frame:SetSize(WIDTH, math.ceil(height))
-
-    tinsert(UISpecialFrames, FRAME_NAME)
-
+    frame:AddField(frame.link, UI.Native.inputHeight, UI.Space.gap, UI.Native.inputArt)
+    frame:AddText("muted", copyHint(), UI.Space.tight)
+    frame:Fit()
     return frame
 end
 
