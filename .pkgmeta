@@ -2,5 +2,6 @@ package-as: PlayerArmoryLink
 manual-changelog: CHANGELOG.md
 
 ignore:
+  - CLAUDE.md
   - Tests
   - Tools
