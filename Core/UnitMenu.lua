@@ -21,16 +21,7 @@ local MENU_TAGS = {
     "MENU_UNIT_RECENT_ALLY_OFFLINE",
 }
 
--- A roster name the menu left joined: "First Surname", or the chat link form "First-Surname".
-local function splitFullName(fullName)
-    local first, surname = fullName:match("^([^%s%-]+)[%s%-](.+)$")
-    if first then
-        return first, surname
-    end
-    return fullName
-end
-
--- UnitPopupManager:OpenMenu fills name and surname from UnitNameUnmodified for unit menus, so unit frames and rosters read the same source.
+-- UnitPopupManager:OpenMenu fills name and surname from UnitNameUnmodified for unit menus. Chat, rosters, recent allies and the scoreboard pass one joined name instead: "First Surname", or the link form "First-Surname". Names hold no spaces or hyphens, so the first two parts are always first name and surname, and anything after them, such as a realm, is dropped.
 local function readName(context)
     local unit = context.unit
     if unit and UnitExists(unit) and not UnitIsPlayer(unit) then
@@ -40,11 +31,11 @@ local function readName(context)
     if not name then
         return nil
     end
-    local surname = context.surname
-    if surname and surname ~= "" then
-        return name, surname
+    local first, surname = name:match("^([^%s%-]+)[%s%-]+([^%s%-]+)")
+    if first then
+        return first, surname
     end
-    return splitFullName(name)
+    return name, context.surname
 end
 
 -- The armory needs a surname. Without regional unique names the second part is the player's realm, as Blizzard's own menu treats it, so there is no page to link.
