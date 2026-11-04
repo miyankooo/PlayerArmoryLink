@@ -1,6 +1,6 @@
 ## Interface: 16001
 ## Title: Player Armory Link
-## Notes: Adds an Armory Link entry to player menus, with Classic Era links until Forever has an armory.
+## Notes: Adds an Armory Link entry to player menus with the player's WoW Forever armory link.
 ## Author: miyanko
 ## Version: 1.0.0
 ## Category: User Interface

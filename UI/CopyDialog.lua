@@ -58,7 +58,7 @@ local function createLinkBox(frame)
     return link
 end
 
--- The name as the 16 px title, the realm, the selected link and a grey hint, above the centre so the character stays visible.
+-- The name with surname as the 16 px title, the selected link and a grey hint, above the centre so the character stays visible.
 local function createDialog()
     local frame = UI.CreateDialog({
         name = addonName .. "Dialog",
@@ -67,7 +67,6 @@ local function createDialog()
         position = { point = "CENTER", y = 140 },
     })
     frame.name = frame:AddText("title", "")
-    frame.realm = frame:AddText("body", "", UI.Space.tight)
     frame.link = createLinkBox(frame)
     frame:AddField(frame.link, UI.Native.inputHeight, UI.Space.gap, UI.Native.inputArt)
     frame:AddText("muted", copyHint(), UI.Space.tight)
@@ -75,11 +74,10 @@ local function createDialog()
     return frame
 end
 
-function ns.ShowCopyDialog(displayName, realm, url)
+function ns.ShowCopyDialog(displayName, url)
     dialog = dialog or createDialog()
     dialog.url = url
     dialog.name:SetText(displayName)
-    dialog.realm:SetText(realm)
     dialog.link:SetText(url)
     dialog.link:SetCursorPosition(0)
     dialog:Show()

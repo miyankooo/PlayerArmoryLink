@@ -1,17 +1,17 @@
 # Player Armory Link
 
-Adds an Armory Link entry to player right-click menus with the player's armory link ready to copy, in the Classic Era format until WoW Forever has an armory.
+Adds an Armory Link entry to player right-click menus with the player's WoW Forever armory link ready to copy.
 
 ## Features
 
 - An Armory Link entry at the end of every player menu: your own portrait, target and focus frames, party and raid frames, chat names, the friends list, the guild and community rosters, recent allies and the battleground scoreboard.
-- A small dialog in the game's own style with the name including the surname, the realm and the link already selected.
+- A small dialog in the game's own style with the name including the surname and the link already selected.
 - One keypress copies the link and closes the dialog: Cmd+C on macOS, Ctrl+C on Windows.
-- Nothing to set up and nothing saved. Realm, region and language come from the game.
+- Nothing to set up and nothing saved. The region comes from the game, and the armory opens in your browser's language.
 
 ## Installation
 
-1. Copy the `PlayerArmoryLink` folder into `World of Warcraft/_classic_beta_/Interface/AddOns/`.
+1. Install it with the CurseForge app under WoW Forever, or copy the `PlayerArmoryLink` folder into `World of Warcraft/_forever_/Interface/AddOns/`.
 2. Restart the game or type `/reload`.
 3. Enable Player Armory Link in the AddOns list.
 
@@ -29,7 +29,7 @@ WoW Forever 1.60.x (Interface `16001`). No other addons needed.
 
 ## Restrictions
 
-WoW Forever has no armory pages yet. Until Blizzard publishes Forever characters, links use the Classic Era armory format, so they do not open a Forever character.
+The armory shows a character only from level 10, so a link to a lower character finds no page.
 
 No entry appears for NPCs. It also stays hidden for players whose name the game hides from addons in restricted content.
 

@@ -47,33 +47,25 @@ local function readName(context)
     return splitFullName(name)
 end
 
--- With regional unique names the second part is a surname and every player shares the current realm. Without them it is the player's realm, as Blizzard's own menu treats it.
-local function identify(name, suffix)
-    if RegionalUniqueNamesEnabled() then
-        return NameUtil.GetFullNameWithoutRealm(name, suffix), GetRealmName()
-    end
-    if suffix and suffix ~= "" then
-        return name, suffix
-    end
-    return name, GetRealmName()
-end
-
+-- The armory needs a surname. Without regional unique names the second part is the player's realm, as Blizzard's own menu treats it, so there is no page to link.
 local function readPlayer(context)
-    local name, suffix = readName(context)
+    if not RegionalUniqueNamesEnabled() then
+        return nil
+    end
+    local name, surname = readName(context)
     if type(name) ~= "string" or name == "" or name == UNKNOWN then
         return nil
     end
-    local displayName, realm = identify(name, suffix)
-    local url = ns.ArmoryUrl(realm, name)
+    local url = ns.ArmoryUrl(name, surname)
     if not url then
         return nil
     end
-    return displayName, realm, url
+    return NameUtil.GetFullNameWithoutRealm(name, surname), url
 end
 
 -- A name under identity restriction arrives as a secret value and any string operation on it throws, so the whole read runs in pcall. canaccessvalue cannot guard it: it rejects secrets from tainted callers.
 local function appendEntry(_, root, context)
-    local ok, displayName, realm, url = pcall(readPlayer, context)
+    local ok, displayName, url = pcall(readPlayer, context)
     if not ok or not url then
         return
     end
@@ -83,7 +75,7 @@ local function appendEntry(_, root, context)
     -- Deferred so the menu tears down before the dialog takes keyboard focus.
     root:CreateButton(ENTRY_TEXT, function()
         C_Timer.After(0, function()
-            ns.ShowCopyDialog(displayName, realm, url)
+            ns.ShowCopyDialog(displayName, url)
         end)
     end)
 end
