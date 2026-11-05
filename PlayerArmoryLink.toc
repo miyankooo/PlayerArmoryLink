@@ -5,6 +5,7 @@
 ## Version: @project-version@
 ## Category: User Interface
 ## IconTexture: Interface\Icons\achievement_general_stayclassy
+## X-Curse-Project-ID: 1785993
 
 Libs\LibStub\LibStub.lua
 Libs\LibNativeUI-1.0\LibNativeUI-1.0.lua
