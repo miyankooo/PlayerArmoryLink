@@ -4,7 +4,7 @@
 ## Author: miyanko
 ## Version: 1.0.0
 ## Category: User Interface
-## IconTexture: Interface\Icons\INV_Misc_Note_02
+## IconTexture: Interface\Icons\achievement_general_stayclassy
 
 Libs\LibStub\LibStub.lua
 Libs\LibNativeUI-1.0\LibNativeUI-1.0.lua
