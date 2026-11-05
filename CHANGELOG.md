@@ -8,5 +8,5 @@
 - No entry appears in the China region, which the Forever armory does not cover.
 - On macOS only Cmd+C copies the link and closes the dialog. Ctrl+C no longer reports a copy that did not happen.
 - Clicking inside the link keeps the whole link selected, so the copy is never empty.
-- The copy hint is easier to read and now says "Press Cmd+C to copy." or "Press Ctrl+C to copy."
+- The dialog is wider and reads top to bottom: the name, a white instruction, then the link. The instruction says "Press Cmd+C to copy the link, then paste it into your browser.", with Ctrl+C on Windows.
 - The dialog's close button now works in combat.

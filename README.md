@@ -5,7 +5,7 @@ Adds an Armory Link entry to player right-click menus with the player's WoW Fore
 ## Features
 
 - An Armory Link entry at the end of every player menu: your own portrait, target and focus frames, party and raid frames, chat names, the friends list, the guild and community rosters, recent allies and the battleground scoreboard.
-- A small dialog in the game's own style with the name including the surname and the link already selected.
+- A small dialog in the game's own style with the name including the surname, a one-line instruction and the link already selected.
 - One keypress copies the link and closes the dialog: Cmd+C on macOS, Ctrl+C on Windows.
 - Works on every ruleset, faction and region the armory covers: Americas & Oceania, Europe, Korea and Taiwan. Names in any alphabet work.
 - Nothing to set up and nothing saved. The region comes from the game, and the armory opens in your browser's language.

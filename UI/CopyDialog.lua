@@ -2,9 +2,11 @@ local addonName, ns = ...
 
 local UI = LibStub("LibNativeUI-1.0")
 
-local TITLE = "Player Armory Link"
+local TITLE = "Armory Link"
 local COPIED_TEXT = "Armory link copied to clipboard."
-local WIDTH = 448
+
+-- The widest LibNativeUI dialog, so as much of the link as possible shows.
+local WIDTH = 480
 
 -- Long enough for the client to finish the copy before the edit box goes away.
 local CLOSE_DELAY = 0.2
@@ -16,7 +18,7 @@ local dialog
 
 local function copyHint()
     local key = IsMacClient() and "Cmd" or "Ctrl"
-    return "Press " .. key .. "+C to copy."
+    return "Press " .. key .. "+C to copy the link, then paste it into your browser."
 end
 
 local function isCopyChord(key)
@@ -58,7 +60,7 @@ local function createLinkBox(frame)
     return link
 end
 
--- The name with surname as the 16 px title, the selected link and a grey hint, above the centre so the character stays visible.
+-- Reads top to bottom: whose link (16 px gold), what to do (white, not grey, so it reads on the dark art), then the selected link. Above the centre so the character stays visible.
 local function createDialog()
     local frame = UI.CreateDialog({
         name = addonName .. "Dialog",
@@ -67,9 +69,9 @@ local function createDialog()
         position = { point = "CENTER", y = 140 },
     })
     frame.name = frame:AddText("title", "")
+    frame:AddText("body", copyHint(), UI.Space.gap)
     frame.link = createLinkBox(frame)
-    frame:AddField(frame.link, UI.Native.inputHeight, UI.Space.gap, UI.Native.inputArt)
-    frame:AddText("muted", copyHint(), UI.Space.tight)
+    frame:AddField(frame.link, UI.Native.inputHeight, UI.Space.tight, UI.Native.inputArt)
     frame:Fit()
     return frame
 end
