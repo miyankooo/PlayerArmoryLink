@@ -6,7 +6,7 @@ A WoW Forever addon that adds an Armory Link entry to player right-click menus, 
 
 ## Features
 
-- Armory Link in every player menu: portraits, chat names, friends, guild and community rosters and more.
+- Armory Link in every player menu: portraits, chat names, friends, Battle.net friends, guild and community rosters and more.
 - A small dialog shows the link already selected.
 - One keypress copies it and closes the dialog.
 - Works with names in any alphabet.

@@ -39,11 +39,10 @@ local function readName(context)
 end
 
 -- The armory needs a surname. Without regional unique names the second part is the player's realm, as Blizzard's own menu treats it, so there is no page to link.
-local function readPlayer(context)
+local function linkFor(name, surname)
     if not RegionalUniqueNamesEnabled() then
         return nil
     end
-    local name, surname = readName(context)
     if type(name) ~= "string" or name == "" or name == UNKNOWN then
         return nil
     end
@@ -54,23 +53,49 @@ local function readPlayer(context)
     return NameUtil.GetFullNameWithoutRealm(name, surname), url
 end
 
--- A name under identity restriction arrives as a secret value and any string operation on it throws, so the whole read runs in pcall. canaccessvalue cannot guard it: it rejects secrets from tainted callers.
-local function appendEntry(_, root, context)
-    local ok, displayName, url = pcall(readPlayer, context)
-    if not ok or not url then
-        return
+local function readUnitPlayer(context)
+    return linkFor(readName(context))
+end
+
+-- A Battle.net friend's menu carries the account, not a character, so the link needs the WoW character they play in this region. Blizzard's own Target entry reads gameAccountInfo.characterName the same way (UnitPopupSharedButtonMixins.lua). A GUID the client resolves is a character in this game, and GetPlayerInfoByGUID returns its name and second part as UnitNameUnmodified does. An unresolved GUID falls back to a "First Surname" character name; a bare name, such as a Retail friend's, has no surname, so no entry shows.
+local function readBNetPlayer(context)
+    local info = context.bnetIDAccount and C_BattleNet.GetAccountInfoByID(context.bnetIDAccount)
+    local game = info and info.gameAccountInfo
+    if not game or game.clientProgram ~= BNET_CLIENT_WOW or not game.isInCurrentRegion then
+        return nil
     end
+    if game.playerGuid then
+        local _, _, _, _, _, name, surname = GetPlayerInfoByGUID(game.playerGuid)
+        if name and surname and surname ~= "" then
+            return linkFor(name, surname)
+        end
+    end
+    return linkFor(readName({ name = game.characterName }))
+end
 
-    root:CreateDivider()
+-- A name under identity restriction arrives as a secret value and any string operation on it throws, so the whole read runs in pcall. canaccessvalue cannot guard it: it rejects secrets from tainted callers.
+local function entryFrom(readPlayer)
+    return function(_, root, context)
+        local ok, displayName, url = pcall(readPlayer, context)
+        if not ok or not url then
+            return
+        end
 
-    -- Deferred so the menu tears down before the dialog takes keyboard focus.
-    root:CreateButton(ENTRY_TEXT, function()
-        C_Timer.After(0, function()
-            ns.ShowCopyDialog(displayName, url)
+        root:CreateDivider()
+
+        -- Deferred so the menu tears down before the dialog takes keyboard focus.
+        root:CreateButton(ENTRY_TEXT, function()
+            C_Timer.After(0, function()
+                ns.ShowCopyDialog(displayName, url)
+            end)
         end)
-    end)
+    end
 end
 
+local appendUnitEntry = entryFrom(readUnitPlayer)
 for _, tag in ipairs(MENU_TAGS) do
-    Menu.ModifyMenu(tag, appendEntry)
+    Menu.ModifyMenu(tag, appendUnitEntry)
 end
+
+-- Group Finder listings get no entry: Blizzard builds that menu without a tag (Blizzard_LFGVanilla_Browse.lua, CreateSearchEntryMenu), so Menu.ModifyMenu cannot reach it without replacing Blizzard's function.
+Menu.ModifyMenu("MENU_UNIT_BN_FRIEND", entryFrom(readBNetPlayer))
