@@ -2,14 +2,14 @@
 
 # Player Armory Link
 
-A WoW Forever addon that adds an Armory Link entry to player right-click menus, with the player's armory link ready to copy. Open any player's armory page without typing their name.
+A WoW Forever addon that adds Armory Link to every player right-click menu. It copies the player's armory link, so you can see their gear, stats and professions in your browser without typing their name and surname.
 
 ## Features
 
 - Armory Link in every player menu: portraits, chat names, friends, Battle.net friends, guild and community rosters and more.
 - A small dialog shows the link already selected.
 - One keypress copies it and closes the dialog.
-- Works with names in any alphabet.
+- Works in every region the armory covers: Americas, Europe, Korea and Taiwan, with names in any alphabet.
 - Nothing to set up.
 
 ## Usage
