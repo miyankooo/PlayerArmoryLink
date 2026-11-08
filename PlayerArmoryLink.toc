@@ -6,8 +6,10 @@
 ## Category: User Interface
 ## IconTexture: Interface\Icons\achievement_general_stayclassy
 ## X-Curse-Project-ID: 1785993
+## SavedVariables: PlayerArmoryLinkDB
 
 Core\Addon.lua
 Core\Link.lua
 UI\CopyDialog.lua
 Core\UnitMenu.lua
+UI\Onboarding.lua
