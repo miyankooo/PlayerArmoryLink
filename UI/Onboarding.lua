@@ -1,10 +1,12 @@
 local addonName, ns = ...
 
 -- The addon has no window or settings page: its one surface is Armory Link on player menus. So the welcome
--- line has no link; it says what the addon does and where to find it.
-local WELCOME = "Copies any player's armory link, so you can see their gear in your browser. "
-    .. "Right-click a player's portrait or chat name and pick Armory Link."
-local HELP = "Type /pal intro to see the welcome line again, or /pal help for this list."
+-- line has no link; it says what the addon does, where to start and where the commands are. The help line
+-- opens with the same where-to-start sentence.
+local START = "Right-click a player's portrait or chat name and pick Armory Link."
+local WELCOME = "Copies any player's armory link, so you can see their gear in your browser. " .. START
+    .. " Type /pal help for the commands."
+local HELP = START .. " Type /pal intro to see the welcome line again, or /pal help for this list."
 local UNKNOWN = "Unknown command. Type /pal help for the list."
 
 -- No saved table yet means the account's first login with the addon. The table stays empty, since the

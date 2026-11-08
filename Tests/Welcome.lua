@@ -45,7 +45,8 @@ Check("the first load prints nothing", #loaded == 0)
 Check("the first load creates the saved table", type(PlayerArmoryLinkDB) == "table")
 Check("the first login prints one line", #login == 1)
 Check("it opens with the gold title and says what the addon does", Has(login[1], WELCOME_START))
-Check("it says where to start", Has(login[1], "pick Armory Link."))
+Check("it says where to start, then where the commands are",
+    Has(login[1], "pick Armory Link. Type /pal help for the commands."))
 
 loaded, login = Load({})
 Check("a later load and login print nothing", #loaded == 0 and #login == 0)
@@ -56,7 +57,8 @@ local function Slash(message)
     return Capture(function() SlashCmdList.PLAYERARMORYLINK(message) end)
 end
 
-local HELP = PREFIX .. "Type /pal intro to see the welcome line again, or /pal help for this list."
+local HELP = PREFIX .. "Right-click a player's portrait or chat name and pick Armory Link. "
+    .. "Type /pal intro to see the welcome line again, or /pal help for this list."
 for _, message in ipairs({ "help", "?", " HELP ", "" }) do
     local lines = Slash(message)
     Check(("/pal %q prints the help line"):format(message), #lines == 1 and lines[1] == HELP)
