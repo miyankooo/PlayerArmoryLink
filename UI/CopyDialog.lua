@@ -2,6 +2,7 @@ local addonName, ns = ...
 
 local TITLE = "Armory Link"
 local COPIED_TEXT = "Armory link copied to clipboard."
+local LINK_HELP = "Opens the player's armory page in your browser, with their gear, stats and professions."
 
 -- macOS copies with Cmd only, so there Ctrl must not close the dialog. The key names are Blizzard's own,
 -- localized as the keyboard labels them, such as STRG on a German client.
@@ -30,6 +31,17 @@ local function CreateText(parent, fontObject, layer)
     text:SetFontObject(fontObject or GameFontHighlight)
     text:SetJustifyH("LEFT")
     return text
+end
+
+-- A GameTooltip owned by the hovered frame, filled with Blizzard's GameTooltip_* line helpers. A frame whose
+-- template already sets OnEnter gets HookScript instead.
+local function AttachTooltip(frame, fill, anchor)
+    frame:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, anchor or "ANCHOR_RIGHT")
+        fill(GameTooltip, self)
+        GameTooltip:Show()
+    end)
+    frame:SetScript("OnLeave", GameTooltip_Hide)
 end
 
 -- Rounds a length derived from text up to the 4 px grid.
@@ -141,6 +153,12 @@ local function createLinkBox(frame)
 
     -- A click places the cursor and drops the selection, so the whole link is selected again.
     link:SetScript("OnMouseUp", EditBox_HighlightText)
+
+    -- InputBoxTemplate sets no OnEnter (InputBoxTemplates.xml:3-10), so the recipe's SetScript is safe here.
+    AttachTooltip(link, function(tooltip)
+        GameTooltip_SetTitle(tooltip, TITLE)
+        GameTooltip_AddNormalLine(tooltip, LINK_HELP)
+    end)
 
     -- Reverts any edit, so the link stays intact and selected.
     link:SetScript("OnTextChanged", function(self, userInput)

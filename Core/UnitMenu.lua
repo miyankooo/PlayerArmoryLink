@@ -1,6 +1,7 @@
 local _, ns = ...
 
 local ENTRY_TEXT = "Armory Link"
+local ENTRY_HELP = "Shows %s's armory link to copy, so you can see their gear, stats and professions in your browser."
 
 -- Every unit menu Forever opens on a player: "MENU_UNIT_" plus the name UnitPopup_OpenMenu receives.
 local MENU_TAGS = {
@@ -76,6 +77,10 @@ local function entryFrom(readPlayer)
             C_Timer.After(0, function()
                 ns.ShowCopyDialog(displayName, url)
             end)
+        end)
+        button:SetTooltip(function(tooltip)
+            GameTooltip_SetTitle(tooltip, ENTRY_TEXT)
+            GameTooltip_AddNormalLine(tooltip, ENTRY_HELP:format(displayName))
         end)
 
         -- Insert is the description's own method that CreateButton appends with (Menu.lua:427), here given
