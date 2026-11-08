@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/miyankooo/PlayerArmoryLink/compare/v1.0.0...v1.1.0) (2026-11-08)
+
+
+### Features
+
+* the copy hint names the copy key as the game labels it, such as STRG on German clients ([993ff7a](https://github.com/miyankooo/PlayerArmoryLink/commit/993ff7acd8cd4cdffbb4020499246318ac79bd31))
+* the copy is confirmed in chat, like Blizzard's own copy notices ([993ff7a](https://github.com/miyankooo/PlayerArmoryLink/commit/993ff7acd8cd4cdffbb4020499246318ac79bd31))
+
 ## 1.0.0 (2026-11-07)
 
 
