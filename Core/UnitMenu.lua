@@ -59,6 +59,10 @@ local function readBNetPlayer(context)
     return linkFor(game.characterName, surname)
 end
 
+-- Blizzard's unit menus open with the player's name as their first element (UnitPopupShared.lua:112), so
+-- the entry goes right under it.
+local FIRST_ENTRY = 2
+
 -- A name under identity restriction is a secret value, and any string operation on it throws, so the
 -- read runs in pcall. canaccessvalue cannot guard it: it rejects secrets from tainted callers.
 local function entryFrom(readPlayer)
@@ -67,13 +71,22 @@ local function entryFrom(readPlayer)
         if not ok or not url then
             return
         end
-        root:CreateDivider()
         -- Deferred so the menu closes before the dialog takes keyboard focus.
-        root:CreateButton(ENTRY_TEXT, function()
+        local button = MenuUtil.CreateButton(ENTRY_TEXT, function()
             C_Timer.After(0, function()
                 ns.ShowCopyDialog(displayName, url)
             end)
         end)
+
+        -- Insert is the description's own method that CreateButton appends with (Menu.lua:427), here given
+        -- the index under the name. Menu.PopulateDescription runs this after Blizzard's generator, so the
+        -- name is already in place. A menu that already has a divider under the name, such as a recent
+        -- ally's (hasMainTitleDivider, UnitPopupShared.lua:133), gets no second one.
+        root:Insert(MenuUtil.CreateTitle(ns.title), FIRST_ENTRY)
+        root:Insert(button, FIRST_ENTRY + 1)
+        if not context.hasMainTitleDivider then
+            root:Insert(MenuUtil.CreateDivider(), FIRST_ENTRY + 2)
+        end
     end
 end
 
