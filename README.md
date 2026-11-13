@@ -19,4 +19,6 @@ A WoW Forever addon that adds Armory Link to every player right-click menu. It c
 3. Press Cmd+C on macOS or Ctrl+C on Windows.
 4. Paste the link into your browser.
 
+Commands: `/pal intro` and `/pal help`.
+
 The armory lists characters from level 10.
